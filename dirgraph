@@ -9,4 +9,60 @@ while getopts ":i:n" o; do
 	esac
 done
 shift $((OPTIND -1))
-echo "cesta  : $1"
+
+if [ $1 ]; then
+	probing_dir=$1
+else
+	probing_dir=`pwd`
+fi
+echo "Root directory: $probing_dir"
+
+ls -RAl $probing_dir | awk '
+{
+	if (NF > 3) { 
+		if (substr($1, 0, 1) == "d") {
+			dirs++
+		}
+		else {
+			files++;
+			if ($5 < 100) { 
+				b_100++
+			} else if ($5 < 1000) {
+				k_1++
+			} else if ($5 < 10000) {
+				k_10++
+			} else if ($5 < 100000) {
+				k_100++
+			} else if ($5 < 1000000) {
+				m_1++
+			} else if ($5 < 10000000) {
+				m_10++
+			} else if ($5 < 100000000) {
+				m_100++
+			} else if ($5 < 1000000000) {
+				g_1++
+			} else if ($5 >= 1000000000) {
+				g_10++
+			}
+			
+		}
+		
+	}
+}
+END { 
+	dirs++;
+	printf("Directories: %d\n", dirs); 
+	printf("All files: %d\n", files);
+	printf("File size histogram:\n");
+	printf("  <100 B  : %d \n", b_100)
+	printf("  <1 KiB  : %d \n", k_1)
+	printf("  <10 KiB : %d \n", k_10)
+	printf("  <100 KiB: %d \n", k_100)
+	printf("  <1 MiB  : %d \n", m_1)
+	printf("  <10 MiB : %d \n", m_10)
+	printf("  <100 MiB: %d \n", m_100)
+	printf("  <1 GiB  : %d \n", g_1)
+	printf("  >=1 GiB : %d \n", g_10)
+	print ""
+}
+'
