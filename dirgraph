@@ -1,0 +1,12 @@
+#!/bin/bash
+
+while getopts ":i:n" o; do
+	case "$o" in
+		i) echo "i = $OPTARG";;
+		n) echo "n";;
+		:) echo "-i requires an argument";;
+		*) echo "USAGE : TODO";;
+	esac
+done
+shift $((OPTIND -1))
+echo "cesta  : $1"
