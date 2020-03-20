@@ -31,8 +31,11 @@ fi
 
 echo "Root directory: $PROBING_DIR"
 COLS=`tput cols`
+if [ -t 1 ]; then
+	RAN_IN_TERM="True"
+fi
 
-find $PROBING_DIR -ls | awk -v cols=$COLS -v n_arg=$N_ARG -v file_ere=$FILE_ERE ' 
+find $PROBING_DIR -ls | awk -v cols=$COLS -v n_arg=$N_ARG -v file_ere=$FILE_ERE -v ran_in_term=$RAN_IN_TERM ' 
 function create_string(num_of_files) {
 	created_string = ""
 	num_of_files = round_down(num_of_files)
@@ -43,6 +46,9 @@ function create_string(num_of_files) {
 }
 function reduce_size(max_files) {
 	if (n_arg == 1) {
+		if (ran_in_term != "True") {
+			return max_files / (79 - 12) 
+		}
 		cols = int(cols) - 12
 		if (cols >= max_files) {
 			return 1
