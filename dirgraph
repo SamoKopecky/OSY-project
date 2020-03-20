@@ -15,6 +15,7 @@ else
 	PROBING_DIR=`pwd`
 fi
 
+
 if [ "$FILE_ERE" ]; then
 	if [ "$FILE_ERE" = "-n" ]; then
 		echo "-i requires an argument"
@@ -29,13 +30,19 @@ if [ "$FILE_ERE" ]; then
 fi
 
 
-echo "Root directory: $PROBING_DIR"
 COLS=`tput cols`
 if [ -t 1 ]; then
 	RAN_IN_TERM="True"
 fi
 
-find $PROBING_DIR -ls | awk -v cols=$COLS -v n_arg=$N_ARG -v file_ere=$FILE_ERE -v ran_in_term=$RAN_IN_TERM ' 
+
+FIND_CMD_OUTPUT=`find $PROBING_DIR -ls`
+FIND_CMD_RETURN_VALUE=$?
+if [ "$FIND_CMD_OUTPUT" ]; then
+
+echo "Root directory: $PROBING_DIR"
+
+echo "$FIND_CMD_OUTPUT" | awk -v cols=$COLS -v n_arg=$N_ARG -v file_ere=$FILE_ERE -v ran_in_term=$RAN_IN_TERM ' 
 function create_string(num_of_files) {
 	created_string = ""
 	num_of_files = round_down(num_of_files)
@@ -117,3 +124,9 @@ END {
 	printf("  >=1 GiB : %s\n", create_string(file_counts[8] / multiplier))
 }
 '
+fi
+if [ "$FIND_CMD_RETURN_VALUE" = 0 ]; then
+	exit 0	
+else	
+	exit 1
+fi
