@@ -4,8 +4,14 @@ while getopts ":i:n" o; do
 	case "$o" in
 		i) FILE_ERE=$OPTARG;;
 		n) N_ARG=1;;
-		:) echo "-i requires an argument";;
-		*) echo "USAGE : TODO";;
+		:) echo "-i requires an argument";
+		   exit 2;;
+		*) echo "Wrong arguments 
+USAGE : dirgraph [-i FILE_ERE] [-n] [DIR] 
+[-i FILE_ERE] - ignore files that match FILE_ERE regex
+[-n] - normalization of the output so that it can fit
+[DIR] - root directory of the search";
+		   exit 3;;
 	esac
 done
 shift $((OPTIND -1))
@@ -19,13 +25,13 @@ fi
 if [ "$FILE_ERE" ]; then
 	if [ "$FILE_ERE" = "-n" ]; then
 		echo "-i requires an argument"
-		N_ARG=1
+		exit 2
 	fi
 	
-	echo "$PROBING_DIR" | grep --quiet "$FILE_ERE"
-	if [ $? = 0 ]; then
-		echo "ignore file cant be contained in root directory" 
-		exit 1
+	
+	if echo "$PROBING_DIR" | grep --quiet "$FILE_ERE"; then
+		echo "ignore regex can't match any files or directories in the root directory" 
+		exit 2
 	fi
 fi
 
@@ -35,9 +41,9 @@ if [ -t 1 ]; then
 	RAN_IN_TERM="True"
 fi
 
-
 FIND_CMD_OUTPUT=`find $PROBING_DIR -ls`
 FIND_CMD_RETURN_VALUE=$?
+
 if [ "$FIND_CMD_OUTPUT" ]; then
 
 echo "Root directory: $PROBING_DIR"
