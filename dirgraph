@@ -9,7 +9,7 @@ while getopts ":i:n" o; do
 		*) echo "Wrong arguments 
 USAGE : dirgraph [-i FILE_ERE] [-n] [DIR] 
 [-i FILE_ERE] - ignore files that match FILE_ERE regex
-[-n] - normalization of the output so that it can fit
+[-n] - normalization of the output 
 [DIR] - root directory of the search";
 		   exit 3;;
 	esac
@@ -31,7 +31,7 @@ if [ "$FILE_ERE" ]; then
 	
 	if echo "$PROBING_DIR" | grep --quiet "$FILE_ERE"; then
 		echo "ignore regex can't match any files or directories in the root directory" 
-		exit 2
+		exit 4
 	fi
 fi
 
@@ -137,3 +137,9 @@ else
 	exit 1
 fi
 
+# Rerturn codes : 
+# 0: success
+# 1: fail for unknow reason
+# 2: -i parameter has no parameter
+# 3: wrong arguments
+# 4: -i regex parameter matches the root given root directory
